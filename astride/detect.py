@@ -15,6 +15,8 @@ from photutils import Background2D, MedianBackground
 
 from astride.utils.edge import EDGE
 
+from PIL import Image
+
 
 class Streak:
     """
@@ -53,19 +55,25 @@ class Streak:
                  contour_threshold=3., min_points=10, shape_cut=0.2,
                  area_cut=20., radius_dev_cut=0.5, connectivity_angle=3.,
                  fully_connected='high', output_path=None):
-        hdulist = fits.open(filename)
-        raw_image = hdulist[0].data.astype(np.float64)
+        raw_image = Image.open(filename)
+        raw_image = raw_image.convert('L')
+        raw_image = np.array(raw_image, dtype=np.float)
+
+        #hdulist = fits.open(filename)
+        #raw_image = hdulist[0].data.astype(np.float64)
 
         # check WCS info
-        try:
-            wcsinfo = hdulist[0].header["CTYPE1"]
-            if wcsinfo:
-                self.wcsinfo = True
-                self.filename = filename
-        except:
-            self.wcsinfo = False
+        # try:
+        #     wcsinfo = hdulist[0].header["CTYPE1"]
+        #     if wcsinfo:
+        #         self.wcsinfo = True
+        #         self.filename = filename
+        # except:
+        #     self.wcsinfo = False
 
-        hdulist.close()
+        self.wcsinfo = False
+
+        #hdulist.close()
 
         # Raw image.
         self.raw_image = raw_image
